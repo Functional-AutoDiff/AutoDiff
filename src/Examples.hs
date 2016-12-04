@@ -28,7 +28,7 @@ h x = foldr (\_ z -> sin (x + z)) x [1..100]
 -- ... for some definitions of "works"
 fib x
   | x < 0 = 0
-  | x <= 2 = x
+  | x <= 1 = x
   | otherwise = fib(x - 1) + fib(x - 2)
 -- `d fib 1.5` should be `1.0`, and it is
 -- `d fib 2.5` should be `2.0`, and it is
