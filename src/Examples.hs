@@ -38,3 +38,7 @@ fib x
 -- For the mathematically inclined, `d f` agrees with the derivative of `f`
 -- wherever `f` is differentiable, but `d f` is potentially defined on a
 -- larger set, as this example illustrates.
+
+-- Nesting is a bit problematic.
+shouldBeOne :: Num a => a
+shouldBeOne = d (\x -> d (*x) 1) 1
