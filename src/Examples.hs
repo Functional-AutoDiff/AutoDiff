@@ -39,6 +39,17 @@ fib x
 -- wherever `f` is differentiable, but `d f` is potentially defined on a
 -- larger set, as this example illustrates.
 
+-- Using Binet's Formula for fib gives it a gentler derivative
+fib_ x = (g0**x - g1**x) / sqrt 5
+  where
+    g0 = (1 + sqrt 5)/2
+    g1 = 1 - g0
+-- which would be nicely differentiable but for...
+
+-- Negative base in power requires different formula
+shouldntBeNaN1 = d ((-2)**) 2
+shouldntBeNaN2 = d (**2) (-2)
+
 -- Nesting is a bit problematic.
 shouldBeOne :: Num a => a
 shouldBeOne = d (\x -> d (*x) 1) 1
