@@ -1,5 +1,7 @@
 module AutoDiff where
 
+import Data.Complex
+
 data Dual a = Dual a a
   deriving (Eq, Read, Show)
 
@@ -35,7 +37,7 @@ instance Fractional a => Fractional (Dual a) where
   fromRational n            = Dual (fromRational n) 0
 
 -- `Floating a` implies `Floating (Dual a)`
-instance (Eq a, Floating a) => Floating (Dual a) where
+instance (Eq a, Floating a, RealFloat a) => Floating (Dual a) where
   pi                = Dual pi 0
   exp (Dual u u')   = Dual (exp u) (u' * (exp u))
   log (Dual u u')   = Dual (log u) (u' / u)
@@ -55,9 +57,24 @@ instance (Eq a, Floating a) => Floating (Dual a) where
   (Dual u u') ** (Dual n 0)
     = Dual (u ** n) (u' * n * u ** (n - 1))
   (Dual a 0) ** (Dual v v')
-    = Dual (a ** v) (v' * log a * a ** v)
+    = Dual (a ** v) z
+    where
+      z = if a>0
+          then (v' * log a * a ** v)
+          else realPart (v'_ * log a_ * a_ ** v_)
+                where v'_ = v' :+ 0
+                      a_ = a :+ 0
+                      v_ = v :+ 0
   (Dual u u') ** (Dual v v')
-    = Dual (u ** v) ((u ** v) * (v' * (log u) + (v * u' / u)))
+    = Dual (u ** v) z
+    where
+      z = if u>0
+          then ((u ** v) * (v' * (log u) + (v * u' / u)))
+          else realPart ((u_ ** v_) * (v'_ * (log u_) + (v_ * u'_ / u_)))
+                where u_ = u :+ 0
+                      v_ = v :+ 0
+                      v'_ = v' :+ 0
+                      u'_ = u' :+ 0
   logBase (Dual u u') (Dual v v')
     = Dual (logBase u v) (((log v) * u' / u - (log u) * v' / v) / ((log u) ** 2))
 
